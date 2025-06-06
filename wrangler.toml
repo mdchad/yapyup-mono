@@ -1,6 +1,6 @@
 name = "yapyup"
 main = "packages/server/src/index.ts"
-compatibility_date = "2025-03-21"
+compatibility_date = "2025-04-01"
 route = "yapyup.com/*"
 
 # compatibility_flags = [ "nodejs_compat" ]
@@ -18,7 +18,7 @@ not_found_handling = "single-page-application"
 
 [[r2_buckets]]
 binding = "MY_BUCKET"
-bucket_name = "audio"
+bucket_name = "yapyup"
 
 # [[d1_databases]]
 # binding = "DB"

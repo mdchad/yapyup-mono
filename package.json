@@ -14,7 +14,7 @@
     "clean": "rm -rf node_modules packages/client/node_modules packages/server/node_modules bun.lock packages/client/bun.lock packages/server/bun.lock",
     "build": "bun run build:client",
     "build:client": "bun run --filter @yapyup/client build",
-    "wrangler:deploy": "wrangler deploy --minify",
+    "wrangler:deploy": "bun run --filter @yapyup/server wrangler:deploy",
     "dev:wrangler": "bun run build:client && wrangler dev"
   },
   "devDependencies": {
