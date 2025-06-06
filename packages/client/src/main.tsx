@@ -4,15 +4,17 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { httpBatchLink } from "@trpc/client";
+import {createTRPCClient, httpBatchLink} from "@trpc/client";
 import { createTRPCQueryUtils } from "@trpc/react-query";
 import ReactDOM from "react-dom/client";
 import { toast } from "sonner";
 import Loader from "./components/loader";
 import { routeTree } from "./routeTree.gen";
-import { trpc } from "./utils/trpc";
+import {createTRPCOptionsProxy} from "@trpc/tanstack-react-query";
+import type { AppRouter } from "../../server/src/routers";
+import { authClient } from "@/lib/auth-client";
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error) => {
       toast.error(error.message, {
@@ -27,7 +29,26 @@ const queryClient = new QueryClient({
   }),
 });
 
-const trpcClient = trpc.createClient({
+// const trpcClient = trpc.createClient({
+//   links: [
+//     httpBatchLink({
+//       url: `${import.meta.env.VITE_SERVER_URL}/trpc`,
+//       fetch(url, options) {
+//         return fetch(url, {
+//           ...options,
+//           credentials: "include",
+//         });
+//       },
+//     }),
+//   ],
+// });
+//
+// export const trpcQueryUtils = createTRPCQueryUtils({
+//   queryClient,
+//   client: trpcClient,
+// });
+
+const trpcClient = createTRPCClient<AppRouter>({
   links: [
     httpBatchLink({
       url: `${import.meta.env.VITE_SERVER_URL}/trpc`,
@@ -41,23 +62,24 @@ const trpcClient = trpc.createClient({
   ],
 });
 
-export const trpcQueryUtils = createTRPCQueryUtils({
-  queryClient,
+export const trpcQueryUtils = createTRPCOptionsProxy<AppRouter>({
   client: trpcClient,
+  queryClient,
 });
 
-const router = createRouter({
+export const router = createRouter({
   routeTree,
   defaultPreload: "intent",
-  context: { trpcQueryUtils },
-  defaultPendingComponent: () => <Loader />,
+  context: {
+    trpcQueryUtils,
+    queryClient
+  },
+  // defaultPendingComponent: () => <Loader />,
   Wrap: function WrapComponent({ children }) {
     return (
-      <trpc.Provider client={trpcClient} queryClient={queryClient}>
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      </trpc.Provider>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
     );
   },
 });

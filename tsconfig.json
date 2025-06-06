@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "strict": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "baseUrl": "./",
+    "paths": {
+      "@yapyup/*": [
+        "packages/*"
+      ]
+    },
+    "downlevelIteration": true,
+    "emitDecoratorMetadata": true,
+    "removeComments": true,
+    "useDefineForClassFields": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true
+  }
+}

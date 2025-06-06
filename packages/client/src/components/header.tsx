@@ -1,45 +1,32 @@
-import { Link } from "@tanstack/react-router";
-import { ModeToggle } from "./mode-toggle";
-import UserMenu from "./user-menu";
+import { Link } from '@tanstack/react-router'
 
-export default function Header() {
+export default function Header({ isAuthenticated }) {
   return (
-    <div>
-      <div className="flex flex-row items-center justify-between px-2 py-1">
-        <div className="flex gap-4 text-lg">
-          <Link
-            to="/"
-            activeProps={{
-              className: "font-bold",
-            }}
-            activeOptions={{ exact: true }}
-          >
-            Home
-          </Link>
-          <Link
-            to="/dashboard"
-            activeProps={{
-              className: "font-bold",
-            }}
-            activeOptions={{ exact: true }}
-          >
-            Dashboard
-          </Link>
-          <Link
-            to="/about"
-            activeProps={{
-              className: "font-bold",
-            }}
-          >
-            About
-          </Link>
+    <header className="p-2 flex gap-2 bg-white text-black justify-between">
+      <nav className="flex flex-row">
+        <div className="px-2">
+          <Link to="/" className="[&.active]:font-bold">Home</Link>
         </div>
-        <div className="flex flex-row items-center gap-2">
-          <ModeToggle />
-          {/* <UserMenu /> */}
+
+        <div className="px-2">
+          <Link to="/demo/tanstack-query" className="[&.active]:font-bold">TanStack Query</Link>
         </div>
-      </div>
-      <hr />
-    </div>
-  );
+
+        { isAuthenticated ? (
+          <>
+            <div className="px-2">
+              <Link to="/dashboard" exact className="[&.active]:font-bold">Dashboard</Link>
+            </div>
+            <div className="px-2">
+              <Link to="/dashboard/chat" className="[&.active]:font-bold">Chat</Link>
+            </div>
+          </>
+        ) : (
+          <div className="px-2">
+            <Link to="/sign-in" className="[&.active]:font-bold">Log In</Link>
+          </div>
+        )}
+      </nav>
+    </header>
+  )
 }

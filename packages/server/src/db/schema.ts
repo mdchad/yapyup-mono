@@ -6,6 +6,10 @@ export const user = sqliteTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: integer("email_verified", { mode: "boolean" }).notNull(),
   image: text("image"),
+  role: text("role").notNull().default("user"),
+  banned: integer("banned", { mode: "boolean" }).notNull().default(false),
+  banReason: text("ban_reason"),
+  banExpires: integer("ban_expires", { mode: "timestamp" }),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
@@ -20,6 +24,10 @@ export const session = sqliteTable("session", {
   userAgent: text("user_agent"),
   userId: text("user_id")
     .notNull()
+    .references(() => user.id),
+  activeOrganizationId: text("active_organization_id")
+    .references(() => organization.id),
+  impersonatedBy: text("impersonated_by")
     .references(() => user.id),
 });
 
@@ -51,5 +59,44 @@ export const verification = sqliteTable("verification", {
   value: text("value").notNull(),
   expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
+});
+
+export const organization = sqliteTable("organization", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  logo: text("logo"),
+  metadata: text("metadata"),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
+});
+
+export const member = sqliteTable("member", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id),
+  organizationId: text("organization_id")
+    .notNull()
+    .references(() => organization.id),
+  role: text("role").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
+});
+
+export const invitation = sqliteTable("invitation", {
+  id: text("id").primaryKey(),
+  email: text("email").notNull(),
+  inviterId: text("inviter_id")
+    .notNull()
+    .references(() => user.id),
+  organizationId: text("organization_id")
+    .notNull()
+    .references(() => organization.id),
+  role: text("role").notNull(),
+  status: text("status").notNull(),
+  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
