@@ -14,7 +14,16 @@ export const auth = betterAuth({
   }),
   trustedOrigins: [process.env.CORS_ORIGIN!],
   emailAndPassword: {
-    enabled: true
+    enabled: true,
+    sendResetPassword: async ({user, url, token}, request) => {
+      await resend.emails.send({
+        from: "Yapyup <onboarding@notifications.yapyup.com>", // You could add your custom domain
+        to: 'delivered@resend.dev', // email of the user to want to end
+        subject: "Reset your password", // Main subject of the email
+        html: `<a href=${url}>Click here to reset your password</a>`, // Content of the email
+        // you could also use "React:" option for sending the email template and there content to user
+      });
+    },
   },
   databaseHooks: {
     session: {
@@ -56,8 +65,8 @@ export const auth = betterAuth({
         await resend.emails.send({
           from: "YapYup <onboarding@notifications.yapyup.com>", // You could add your custom domain
           to: 'delivered@resend.dev', // email of the user to want to end
-          subject: "Email Verification", // Main subject of the email
-          html: `Click the link to verify your email: ${inviteLink}`, // Content of the email
+          subject: "Invitation to Yapyup", // Main subject of the email
+          html: `<a href="${inviteLink}">Click here to accept invitation to Yapyup`, // Content of the email
           // you could also use "React:" option for sending the email template and there content to user
         });
       }

@@ -26,7 +26,6 @@ const redirectSearchSchema = z.object({
   app_redirect: z.string().optional(),
 })
 
-
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   validateSearch: redirectSearchSchema,
   beforeLoad: async ({  context, location }) => {
@@ -57,10 +56,6 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 function RootComponent() {
   const session = authClient.useSession();
 
-  const isFetching = useRouterState({
-    select: (s) => s.isLoading,
-  });
-
   useEffect(() => {
     router.invalidate()
   }, [session?.data?.session?.id]);
@@ -68,10 +63,9 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        {/*{isFetching && <Loader />}*/}
         <Outlet />
         <Toaster />
-        <TanStackRouterDevtools position="bottom-left" />
+        <TanStackRouterDevtools position="bottom-right" />
         <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
       </ThemeProvider>
     </QueryClientProvider>

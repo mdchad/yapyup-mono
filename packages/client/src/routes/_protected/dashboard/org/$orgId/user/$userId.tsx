@@ -7,6 +7,7 @@ import { EditIcon } from 'lucide-react'
 import { authClient } from "@/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
 import { authQueries } from "@/lib/queries/auth";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 
 
 export const Route = createFileRoute(
@@ -34,29 +35,38 @@ function RouteComponent() {
   return (
     <div>
       <main className="flex-1 flex flex-col py-12 px-6">
-        <div className="flex flex-col gap-6 px-30">
-          <h2 className="text-xl font-semibold">General details</h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" name="name" value={data?.data?.user.name || ''} onChange={handleChange} required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="slug">Email</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="email"
-                    name="email"
-                    value={data?.data?.user.email || ''}
-                    onChange={handleChange}
-                    required
-                  />
+        <div className="mx-auto w-full max-w-5xl px-6 py-8">
+          <h1 className="text-4xl font-medium">General details</h1>
+        </div>
+        <div className="flex flex-col gap-3 md:gap-6 mx-auto w-full max-w-full px-6 md:max-w-5xl">
+          <Card className="w-full mb-10 shadow-xs">
+            <CardHeader>
+              <CardTitle>Overview</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="name">Name</Label>
+                    <Input id="name" name="name" value={data?.data?.user.name || ''} onChange={handleChange} required />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="slug">Email</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="email"
+                        name="email"
+                        value={data?.data?.user.email || ''}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <Button type="submit" className="w-full">{'Update'}</Button>
-          </form>
+                <Button type="submit">{'Update'}</Button>
+              </form>
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>

@@ -8,6 +8,7 @@ import {
   Settings,
   User2,
   Plus,
+  ChevronsUpDown, Ellipsis
 } from "lucide-react";
 
 import {
@@ -36,16 +37,14 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Button } from "@/components/ui/button";
-import { LogoutIcon } from "@/components/ui/logout";
 import { useRef } from "react";
-import { UserIcon } from "@/components/ui/user";
-import { ChevronUpIcon } from "@/components/ui/chevron-up";
 import { LayersIcon } from "@/components/ui/layers";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { authClient } from "@/lib/auth-client";
 import { Separator } from "@/components/ui/separator";
 import { CheckIcon } from "@/components/ui/check";
+import { useQuery } from "@tanstack/react-query";
+import { authQueries } from "@/lib/queries/auth";
 
 // Menu items.
 const items = [
@@ -80,7 +79,7 @@ export function AppSidebar() {
   const { data: activeOrganization } = authClient.useActiveOrganization();
   const { data: organizations } = authClient.useListOrganizations();
 
-  const queryClient = useRouteContext({ select: (context) => context.queryClient})
+  const { data, isLoading } = useQuery(authQueries.activeMember())
 
   const iconRef = useRef(null);
   const layersIconRef = useRef(null);
@@ -89,38 +88,32 @@ export function AppSidebar() {
   async function handleSignOut() {
     try {
       await authClient.signOut();
-
-      await queryClient.invalidateQueries({ queryKey: ['auth', 'session'], });
-      // router.invalidate();
-
-      // Check if it worked
-
-      // queryClient.removeQueries({ queryKey: ['auth', 'session'] });
-      // queryClient.removeQueries({ queryKey: ['organizations'] });
-      // queryClient.removeQueries({ queryKey: ['organization'] });
-    } catch (error) {
-
-    }
+    } catch (error) {}
   }
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="bg-slate-50/60">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
-                  className="border border-gray-200 px-2 py-4 font-medium"
+                  className="cursor-pointer px-2 py-5 font-medium text-gray-600 capitalize hover:bg-slate-200"
                   onMouseEnter={() => layersIconRef.current?.startAnimation()}
                   onMouseLeave={() => layersIconRef.current?.stopAnimation()}
                 >
                   <LayersIcon size={16} ref={layersIconRef} />
                   {activeOrganization?.name}
-                  <ChevronDown className="ml-auto" />
+                  <ChevronsUpDown
+                    className="ml-auto"
+                    width="14"
+                    height="14"
+                    color="gray"
+                  />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-[--radix-popper-anchor-width] min-w-[207px]">
+              <DropdownMenuContent className="min-w-[var(--radix-dropdown-menu-trigger-width)]">
                 {organizations &&
                   organizations.map((org) => {
                     const isActive = org.id === activeOrganization?.id;
@@ -136,7 +129,7 @@ export function AppSidebar() {
                         }
                       >
                         <div className="flex w-full items-center justify-between">
-                          <p>{org.name}</p>
+                          <p className="capitalize">{org.name}</p>
                           {isActive && <CheckIcon ref={checkIconRef} />}
                           {/*{isActive && (*/}
                           {/*  <div className="w-2 h-2 rounded-full bg-green-500" />*/}
@@ -203,25 +196,26 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
-                  className="cursor-pointer py-6"
+                  className="cursor-pointer py-6 hover:bg-neutral-200 flex items-center justify-between"
                   onMouseEnter={() => iconRef.current?.startAnimation()}
                   onMouseLeave={() => iconRef.current?.stopAnimation()}
                 >
                   {/*<User2 />*/}
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                    <AvatarFallback className="rounded-lg">I</AvatarFallback>
                   </Avatar>
-                  <ChevronUpIcon
+                  <span className="truncate text-xs">{data?.data?.user.email}</span>
+                  <Ellipsis
                     size={18}
                     ref={iconRef}
+                    color="gray"
                     className="text-gray-500"
                   />
-                  {/*<span className="truncate text-xs">{user.email}</span>*/}
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 side="top"
-                className="w-[--radix-popper-anchor-width]"
+                className="min-w-[var(--radix-dropdown-menu-trigger-width)]"
               >
                 <DropdownMenuItem>
                   <span>Account</span>
