@@ -15,7 +15,13 @@ import {useNavigate} from "@tanstack/react-router";
 import {authClient} from "@/lib/auth-client";
 import {toast} from "sonner";
 
-export function LoginForm({ className, redirect, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+type LoginFormProps = {
+  redirect?: string;
+  className?: string;
+  children?: React.ReactNode;
+}
+
+export function LoginForm({ className, redirect, ...props }: LoginFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)

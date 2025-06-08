@@ -19,7 +19,6 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
-  const [organisation, setOrganisation] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -38,7 +37,6 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
         email, // user email address
         password, // user password -> min 8 characters by default
         name, // user display name
-        organisation,
         // image, // User image URL (optional)
         callbackURL: "/dashboard" // A URL to redirect to after the user verifies their email (optional)
       }, {

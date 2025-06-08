@@ -2,19 +2,22 @@
 import {createFileRoute, Link, useRouteContext} from '@tanstack/react-router'
 import {useQuery} from "@tanstack/react-query";
 import {trpcQueryUtils} from "@/main";
-// import {Header} from "@/components/ui/header";
+import {Header} from "@/components/ui/header";
+import {authClient} from "@/lib/auth-client";
 
 export const Route = createFileRoute('/')({
   component: HomeComponent,
 })
 
 function HomeComponent() {
-  const healthCheckQuery = useQuery(trpcQueryUtils.healthCheck.queryOptions({}));
-  const privateDataQuery = useQuery(trpcQueryUtils.privateData.queryOptions({}));
+  const session = authClient.useSession();
+
+  const healthCheckQuery = useQuery(trpcQueryUtils.healthCheck.queryOptions());
+  const privateDataQuery = useQuery(trpcQueryUtils.privateData.queryOptions());
 
   return (
     <>
-      {/*<Header isAuthenticated={auth.data?.session}/>*/}
+      <Header isAuthenticated={session.data}/>
       <div className="p-2">
         <h3>Welcome Home!</h3>
         <Link to="/dashboard">Go to Dashboard</Link>

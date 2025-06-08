@@ -49,10 +49,6 @@ function RouteComponent() {
     // Update organisation in Supabase
   };
 
-  // if (loading) {
-  //   return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  // }
-
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center text-red-500">
@@ -66,80 +62,63 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex">
-      {/* Main content */}
-      <main className="flex flex-1 flex-col px-48 py-12">
-        <div className="flex flex-col gap-6">
-          <h2 className="text-xl font-semibold">General details</h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="mb-8 flex items-center gap-4">
-              {/* Logo preview */}
-              {activeOrganization?.logo_url ? (
-                <img
-                  src={activeOrganization?.logo_url}
-                  alt="Logo"
-                  className="h-16 w-16 rounded-full border object-cover"
-                />
-              ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200 text-2xl">
-                  🏢
-                </div>
-              )}
-              <div>
-                <div className="text-lg font-semibold">
-                  {activeOrganization.name}
-                </div>
-                <div className="text-sm text-gray-500">
-                  Organization profile
-                </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Tab Navigation */}
+      <nav className="flex border-b bg-white px-12 pt-8 pb-2 gap-8 text-sm font-medium">
+        <Link to="/dashboard/org/$orgId" params={{ orgId: params.orgId }} className="px-2 py-1 hover:text-black text-gray-600">Usage</Link>
+        <Link to="/dashboard/org/$orgId" params={{ orgId: params.orgId }} className="px-2 py-1 hover:text-black text-gray-600">Billing</Link>
+        <span className="px-2 py-1 rounded bg-gray-100 text-black">Team</span>
+        <Link to="/dashboard/org/$orgId" params={{ orgId: params.orgId }} className="px-2 py-1 hover:text-black text-gray-600">SMTP</Link>
+        <Link to="/dashboard/org/$orgId" params={{ orgId: params.orgId }} className="px-2 py-1 hover:text-black text-gray-600">Integrations</Link>
+        <Link to="/dashboard/org/$orgId" params={{ orgId: params.orgId }} className="px-2 py-1 hover:text-black text-gray-600">Documents</Link>
+      </nav>
+      <main className="flex flex-col items-center px-4 py-10">
+        {/* Overview Card */}
+        <Card className="w-full max-w-2xl mb-10 shadow-xs">
+          <CardHeader>
+            <CardTitle>Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="flex items-center gap-6 mb-6">
+                {/* Avatar */}
+                {activeOrganization?.logo_url ? (
+                  <img
+                    src={activeOrganization?.logo_url}
+                    alt="Logo"
+                    className="h-16 w-16 rounded-lg border object-cover"
+                  />
+                ) : (
+                  <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-gradient-to-br from-purple-700 to-purple-400 text-3xl font-bold text-white">
+                    {activeOrganization.name?.[0]?.toUpperCase() || "I"}
+                  </div>
+                )}
+                <Button type="button" variant="outline" className="h-9">Update Image</Button>
               </div>
-              {/*<Button type="submit" variant="outline" className="ml-auto" disabled={saving}>*/}
-              {/*  Edit profile*/}
-              {/*</Button>*/}
-              <div>
-                <InvitationDialog />
-              </div>
-              {/*<Button type="submit" variant="outline" className="ml-auto" disabled={saving} onClick={handleInvitation}>*/}
-              {/*  Invite members*/}
-              {/*</Button>*/}
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Name</Label>
+              <div className="mb-4">
+                <Label htmlFor="name">Team Name</Label>
                 <Input
                   id="name"
                   name="name"
                   value={activeOrganization.name || ""}
                   onChange={handleChange}
                   required
+                  className="mt-2 capitalize"
                 />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="slug">Slug</Label>
-                <div className="flex gap-2">
-                  <Input
-                    disabled
-                    id="slug"
-                    name="slug"
-                    value={activeOrganization.slug || ""}
-                    onChange={handleChange}
-                    required
-                  />
-                  {/*<Button onClick={generateSlug} size="sm" type="button">Generate</Button>*/}
-                </div>
-              </div>
-            </div>
-            {error && <div className="text-sm text-red-500">{error}</div>}
-            {success && <div className="text-sm text-green-600">Saved!</div>}
-            <Button type="submit" className="w-full" disabled={saving}>
-              {saving ? "Saving..." : "Save Changes"}
-            </Button>
-          </form>
-        </div>
-        {/* Members table below the form */}
-        <Card className="mt-12 w-full max-w-2xl">
-          <CardHeader>
+              <Button type="submit" className="cursor-pointer" disabled={saving}>
+                {saving ? "Saving..." : "Save"}
+              </Button>
+              {error && <div className="text-sm text-red-500">{error}</div>}
+              {success && <div className="text-sm text-green-600">Saved!</div>}
+            </form>
+          </CardContent>
+        </Card>
+        {/* Members Card */}
+        <Card className="w-full max-w-2xl mb-10 shadow-xs">
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Members</CardTitle>
+            <Button className="ml-auto" variant="default">Invite</Button>
           </CardHeader>
           <CardContent>
             {isLoading && !data ? (
@@ -153,82 +132,84 @@ function RouteComponent() {
                 ))}
               </div>
             ) : (
-              <>
-                <table className="min-w-full text-sm">
-                  <thead>
-                    <tr>
-                      <th className="py-2 text-left">Name</th>
-                      <th className="py-2 text-left">Email</th>
-                      <th className="py-2 text-left">Role</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data?.data?.members.map((member) => (
-                      <tr key={member.id}>
-                        <td className="py-1">{member.user.name || "-"}</td>
-                        <td className="py-1">{member.user.email}</td>
-                        <td className="py-1">
-                          {member.role ? member.role : "—"}
-                        </td>
-                        <td className="py-1">
-                          <Link
-                            to="/dashboard/org/$orgId/user/$userId"
-                            params={{
-                              orgId: params.orgId,
-                              userId: member.id,
-                            }}
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr>
+                    <th className="py-2 text-left">Email</th>
+                    <th className="py-2 text-left">Role</th>
+                    <th className="py-2 text-left">Enabled MFA</th>
+                    <th className="py-2 text-left"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.data?.members.map((member) => (
+                    <tr key={member.id} className="border-b last:border-b-0">
+                      <td className="py-2">{member.user.email}</td>
+                      <td className="py-2"><div className="bg-slate-100 rounded-lg px-2 py-1 inline-flex items-center font-medium text-xs capitalize">{member.role ? member.role : "—"}</div></td>
+                      <td className="py-2">{'-'}</td>
+                      <td className="py-2 text-right">
+                        <Link
+                          to="/dashboard/org/$orgId/user/$userId"
+                          params={{
+                            orgId: params.orgId,
+                            userId: member.id,
+                          }}
+                        >
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-6 w-6 cursor-pointer"
                           >
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-6 w-6 cursor-pointer"
-                            >
-                              <EditIcon className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <CardTitle className="mt-10">Invatations</CardTitle>
-                <table className="mt-6 min-w-full bg-gray-50 text-sm rounded-xl">
-                  <thead>
-                    <tr>
-                      <th className="p-4 text-left">Email</th>
-                      <th className="p-4 text-left">Role</th>
-                      <th></th>
+                            <EditIcon className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {data?.data?.invitations.map((invitee) => (
-                      <tr key={invitee.id}>
-                        <td className="py-1 px-4">{invitee.email}</td>
-                        <td className="py-1 px-4">
-                          {invitee.role ? invitee.role : "—"}
-                        </td>
-                        <td className="py-1 px-4">
-                          <Link
-                            to="/dashboard/org/$orgId/user/$userId"
-                            params={{
-                              orgId: params.orgId,
-                              userId: invitee.id,
-                            }}
-                          >
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6 cursor-pointer"
-                            >
-                              <XIcon className="text-red-400"/>
-                            </Button>
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </CardContent>
+        </Card>
+        {/* Invitations Card */}
+        <Card className="w-full max-w-2xl shadow-xs">
+          <CardHeader>
+            <CardTitle>Invitations</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading && !data ? (
+              <div className="space-y-2">
+                {[...Array(2)].map((_, i) => (
+                  <div className="flex space-x-8" key={i}>
+                    <Skeleton className="h-6 w-1/4" />
+                    <Skeleton className="h-6 w-1/4" />
+                    <Skeleton className="h-6 w-1/4" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr>
+                    <th className="py-2 text-left">Email</th>
+                    <th className="py-2 text-left">Role</th>
+                    <th className="py-2 text-left"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.data?.invitations?.map((invitee) => (
+                    <tr key={invitee.id} className="border-b last:border-b-0">
+                      <td className="py-2">{invitee.email}</td>
+                      <td className="py-2"><div className="bg-slate-100 rounded-lg px-2 py-1 inline-flex items-center font-medium text-xs capitalize">{invitee.role ? invitee.role : "—"}</div></td>
+                      <td className="py-2 text-right">
+                        <Button variant="ghost" size="icon" className="h-6 w-6 cursor-pointer">
+                          <XIcon className="text-red-400" />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </CardContent>
         </Card>

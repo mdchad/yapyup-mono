@@ -13,6 +13,8 @@ import { routeTree } from "./routeTree.gen";
 import {createTRPCOptionsProxy} from "@trpc/tanstack-react-query";
 import type { AppRouter } from "../../server/src/routers";
 import { authClient } from "@/lib/auth-client";
+import {useEffect} from "react";
+import {AuthProvider, useAuth} from "@/providers/auth-provider";
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
@@ -28,25 +30,6 @@ export const queryClient = new QueryClient({
     },
   }),
 });
-
-// const trpcClient = trpc.createClient({
-//   links: [
-//     httpBatchLink({
-//       url: `${import.meta.env.VITE_SERVER_URL}/trpc`,
-//       fetch(url, options) {
-//         return fetch(url, {
-//           ...options,
-//           credentials: "include",
-//         });
-//       },
-//     }),
-//   ],
-// });
-//
-// export const trpcQueryUtils = createTRPCQueryUtils({
-//   queryClient,
-//   client: trpcClient,
-// });
 
 const trpcClient = createTRPCClient<AppRouter>({
   links: [
@@ -72,7 +55,8 @@ export const router = createRouter({
   defaultPreload: "intent",
   context: {
     trpcQueryUtils,
-    queryClient
+    queryClient,
+    auth: undefined
   },
   // defaultPendingComponent: () => <Loader />,
   Wrap: function WrapComponent({ children }) {
@@ -91,9 +75,23 @@ declare module "@tanstack/react-router" {
   }
 }
 
+export const App = () => {
+  const auth = useAuth();
+
+  useEffect(() => {
+    router.invalidate();
+  }, [auth?.data?.session.id]);
+
+  return <RouterProvider router={router} context={{ auth }} />;
+};
+
 const rootElement = document.getElementById("app")!;
 
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
-  root.render(<RouterProvider router={router} />);
+  root.render(
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  );
 }

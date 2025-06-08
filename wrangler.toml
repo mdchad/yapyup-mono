@@ -1,5 +1,5 @@
 name = "yapyup"
-main = "packages/server/src/index.ts"
+main = "packages/server/dist/worker.js"
 compatibility_date = "2025-04-01"
 route = "yapyup.com/*"
 

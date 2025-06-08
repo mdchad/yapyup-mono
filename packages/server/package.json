@@ -7,9 +7,9 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "wrangler:dev": "wrangler dev",
-    "wrangler:deploy": "bun run build:worker && wrangler deploy dist/worker.js",
+    "wrangler:deploy": "bun run build:worker && wrangler deploy",
     "compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile server",
-    "build:worker": "bun --env-file=.env.production build ./src/index.ts --target browser --outfile dist/worker.js --minify --env inline"
+    "build:worker": "bun --env-file=.env.production build ./src/index.ts --outfile dist/worker.js --minify --env inline"
   },
   "dependencies": {
     "@hono/trpc-server": "^0.3.4",

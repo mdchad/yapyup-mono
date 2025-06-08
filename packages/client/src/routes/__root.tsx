@@ -13,17 +13,24 @@ import "../index.css";
 import {  QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
+import {authQueries} from "@/lib/queries/auth";
+import {z} from "zod";
 
 export interface RouterAppContext {
   trpcQueryUtils: typeof trpcQueryUtils;
   queryClient: typeof queryClient;
+  auth: any;
 }
 
-export const Route = createRootRouteWithContext<RouterAppContext>()({
-  beforeLoad: async ({  context, location }) => {
-    const session = await authClient.getSession();
+const redirectSearchSchema = z.object({
+  app_redirect: z.string().optional(),
+})
 
-    const isAuthenticated = !!session?.data?.session?.id
+
+export const Route = createRootRouteWithContext<RouterAppContext>()({
+  validateSearch: redirectSearchSchema,
+  beforeLoad: async ({  context, location }) => {
+    const isAuthenticated = !!context.auth?.data?.session?.id
     // const isAuthenticated = !!session?.user
     const isDashboardRoute = location.pathname.startsWith('/dashboard')
     if (!isAuthenticated && isDashboardRoute) {
@@ -41,11 +48,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       });
     }
 
-    // await context.queryClient.ensureQueryData(authQueries.organizations());
-    // await context.queryClient.ensureQueryData(authQueries.activeMember());
+    await context.queryClient.ensureQueryData(authQueries.fullOrganization());
+    await context.queryClient.ensureQueryData(authQueries.activeMember());
   },
   component: RootComponent,
-
 });
 
 function RootComponent() {
