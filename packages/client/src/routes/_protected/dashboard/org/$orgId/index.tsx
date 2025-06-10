@@ -27,6 +27,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_protected/dashboard/org/$orgId/")({
   component: RouteComponent,
@@ -44,7 +45,7 @@ function RouteComponent() {
   const [org, setOrg] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const logoutRef = useRef(null);
 
@@ -56,7 +57,6 @@ function RouteComponent() {
     e.preventDefault();
     setSaving(true);
     setError(null);
-    setSuccess(false);
   };
 
   if (error) {
@@ -72,11 +72,24 @@ function RouteComponent() {
   }
 
   async function cancelInvitation(e: any, invitationId: string) {
-    await authClient.organization.cancelInvitation({
+    const cancelInvitation = authClient.organization.cancelInvitation({
       invitationId,
     });
 
-    await queryClient.invalidateQueries({ queryKey: ['organization', params.orgId, 'full'], });
+    toast.promise(cancelInvitation, {
+      style: {
+        background: 'white'
+      },
+      loading: 'Loading...',
+      success: (data: { name: string }) => {
+        queryClient.invalidateQueries({
+          queryKey: ['organization', params.orgId, 'full']
+        });
+        return `Invitation cancelled for ${data.data.email}`;
+      },
+      error: 'Error',
+    });
+
   }
 
   return (
@@ -180,6 +193,7 @@ function RouteComponent() {
           <Card className="mb-10 w-full shadow-xs">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Members</CardTitle>
+              <InvitationDialog id={params.orgId}/>
               <Button className="ml-auto" variant="default">
                 Invite
               </Button>

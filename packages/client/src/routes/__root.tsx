@@ -6,15 +6,16 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   Outlet,
   createRootRouteWithContext,
-  useRouterState, redirect,
+  useRouterState,
+  redirect,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import "../index.css";
-import {  QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
-import {authQueries} from "@/lib/queries/auth";
-import {z} from "zod";
+import { authQueries } from "@/lib/queries/auth";
+import { z } from "zod";
 
 export interface RouterAppContext {
   trpcQueryUtils: typeof trpcQueryUtils;
@@ -24,14 +25,19 @@ export interface RouterAppContext {
 
 const redirectSearchSchema = z.object({
   app_redirect: z.string().optional(),
-})
+});
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   validateSearch: redirectSearchSchema,
-  beforeLoad: async ({  context, location }) => {
-    const isAuthenticated = !!context.auth?.data?.session?.id
+  beforeLoad: async ({ context, location }) => {
+    const isAuthenticated = !!context.auth?.data?.session?.id;
     // const isAuthenticated = !!session?.user
-    const isDashboardRoute = location.pathname.startsWith('/dashboard')
+    const isDashboardRoute = location.pathname.startsWith("/dashboard");
+    const isDashboardRedirectRoute =
+      location &&
+      location.search &&
+      location.search.app_redirect &&
+      location.search.app_redirect.startsWith("/dashboard");
     if (!isAuthenticated && isDashboardRoute) {
       throw redirect({
         to: "/sign-in",
@@ -41,14 +47,20 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       });
     }
 
-    if (isAuthenticated && location.searchStr !== "") {
+    if (isAuthenticated) {
+      context.queryClient.ensureQueryData(authQueries.fullOrganization());
+      context.queryClient.ensureQueryData(authQueries.activeMember());
+    }
+
+    if (
+      isAuthenticated &&
+      isDashboardRedirectRoute &&
+      location.searchStr !== ""
+    ) {
       throw redirect({
         to: location.search.app_redirect,
       });
     }
-
-    await context.queryClient.ensureQueryData(authQueries.fullOrganization());
-    await context.queryClient.ensureQueryData(authQueries.activeMember());
   },
   component: RootComponent,
 });
@@ -57,7 +69,7 @@ function RootComponent() {
   const session = authClient.useSession();
 
   useEffect(() => {
-    router.invalidate()
+    router.invalidate();
   }, [session?.data?.session?.id]);
 
   return (

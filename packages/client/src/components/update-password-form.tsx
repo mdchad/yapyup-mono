@@ -13,6 +13,7 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
+import { LoaderCircle } from "lucide-react";
 
 type UpdatePasswordFormProps = {
   token: string;
@@ -83,7 +84,9 @@ export function UpdatePasswordForm({
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save new password"}
+                {isLoading ? (
+                  <LoaderCircle className="mr-2 animate-spin" />
+                ) : "Save new password"}
               </Button>
             </div>
           </form>

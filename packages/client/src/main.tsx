@@ -5,14 +5,11 @@ import {
 } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import {createTRPCClient, httpBatchLink} from "@trpc/client";
-import { createTRPCQueryUtils } from "@trpc/react-query";
 import ReactDOM from "react-dom/client";
 import { toast } from "sonner";
-import Loader from "./components/loader";
 import { routeTree } from "./routeTree.gen";
 import {createTRPCOptionsProxy} from "@trpc/tanstack-react-query";
 import type { AppRouter } from "../../server/src/routers";
-import { authClient } from "@/lib/auth-client";
 import {useEffect} from "react";
 import {AuthProvider, useAuth} from "@/providers/auth-provider";
 

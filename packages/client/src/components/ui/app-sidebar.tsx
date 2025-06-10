@@ -75,7 +75,7 @@ const items = [
   },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ user }: {user: any}) {
   const { data: activeOrganization } = authClient.useActiveOrganization();
   const { data: organizations } = authClient.useListOrganizations();
 
@@ -197,8 +197,6 @@ export function AppSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   className="cursor-pointer py-6 hover:bg-neutral-200 flex items-center justify-between"
-                  onMouseEnter={() => iconRef.current?.startAnimation()}
-                  onMouseLeave={() => iconRef.current?.stopAnimation()}
                 >
                   {/*<User2 />*/}
                   <Avatar className="h-8 w-8 rounded-lg">
